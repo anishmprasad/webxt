@@ -1,19 +1,41 @@
 {
-  "name": "mywebpack",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/anishmprasad/myWebpack.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/anishmprasad/myWebpack/issues"
-  },
-  "homepage": "https://github.com/anishmprasad/myWebpack#readme"
+	"name": "mywebpack",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/anishmprasad/myWebpack.git"
+	},
+	"peerDependencies": {
+		"webpack": "^4.41.0",
+		"babel-loader": "^8.0.6",
+		"@babel/core": "^7.6.2",
+		"@babel/plugin-proposal-class-properties": "^7.5.5",
+		"@babel/plugin-proposal-decorators": "^7.6.0",
+		"@babel/plugin-proposal-export-default-from": "^7.5.2",
+		"@babel/plugin-proposal-export-namespace-from": "^7.5.2",
+		"@babel/plugin-proposal-object-rest-spread": "^7.6.2",
+		"@babel/plugin-transform-member-expression-literals": "^7.2.0",
+		"@babel/plugin-transform-object-assign": "^7.2.0",
+		"@babel/plugin-transform-property-literals": "^7.2.0",
+		"@babel/plugin-transform-runtime": "^7.6.2",
+		"@babel/plugin-transform-spread": "^7.6.2",
+		"@babel/plugin-transform-template-literals": "^7.4.4",
+		"@babel/plugin-transform-typescript": "^7.6.0",
+		"@babel/preset-env": "^7.6.2",
+		"@babel/preset-react": "^7.0.0",
+		"babel-plugin-import": "^1.12.2",
+		"babel-plugin-inline-import-data-uri": "^1.0.1",
+		"case-sensitive-paths-webpack-plugin": "^2.2.0"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/anishmprasad/myWebpack/issues"
+	},
+	"homepage": "https://github.com/anishmprasad/myWebpack#readme"
 }
