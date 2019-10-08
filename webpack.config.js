@@ -43,13 +43,13 @@ function getWebpackConfig(modules) {
 	]);
 
 	// Other package
-	if (pkg.name !== '@embibe/educo') {
+	if (pkg.name !== 'myWebpack') {
 		babelConfig.plugins.push([
 			resolve('babel-plugin-import'),
 			{
 				style: 'css',
 				libraryDirectory: 'es',
-				libraryName: 'educo'
+				libraryName: 'myWebpack'
 			},
 			'other-package-babel-plugin-import'
 		]);
@@ -176,7 +176,7 @@ function getWebpackConfig(modules) {
                 All rights reserved.
             `),
 			new WebpackBar({
-				name: 'Educo Component Library',
+				name: 'myWebpack',
 				color: '#2f54eb'
 			}),
 			new CleanUpStatsPlugin(),
