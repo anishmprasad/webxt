@@ -15,8 +15,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
-const postcssConfig = require('./postcssConfig');
-const CleanUpStatsPlugin = require('./cleanupstatsplugin');
+const postcssConfig = require('./utils/postcssConfig');
+const CleanUpStatsPlugin = require('./utils/cleanupstatsplugin');
 
 const svgRegex = /\.svg(\?v=\d+\.\d+\.\d+)?$/;
 const svgOptions = {
@@ -30,7 +30,7 @@ const imageOptions = {
 
 function getWebpackConfig(modules) {
 	const pkg = require(getProjectPath('package.json'));
-	const babelConfig = require('./getBabelCommonConfig')(modules || false);
+	const babelConfig = require('./utils/getBabelCommonConfig')(modules || false);
 
 	// babel import for components
 	babelConfig.plugins.push([
