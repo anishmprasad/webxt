@@ -1,3 +1,3 @@
-# myWebpack
+# webxt 🔧🔧🔧
 
-my webpack config for modern web apps
+a webpack config for modern web apps
