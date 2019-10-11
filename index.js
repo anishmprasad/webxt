@@ -15,8 +15,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
-// const postcssConfig = require('./postcssConfig');
-const CleanUpStatsPlugin = require('./cleanupstatsplugin');
+const postcssConfig = require('./utils/postcssConfig');
+const CleanUpStatsPlugin = require('./utils/CleanUpStatsPlugin');
 
 const svgRegex = /\.svg(\?v=\d+\.\d+\.\d+)?$/;
 const svgOptions = {
@@ -30,7 +30,7 @@ const imageOptions = {
 
 function getWebpackConfig(modules) {
 	const pkg = require(getProjectPath('package.json'));
-	const babelConfig = require('./getBabelCommonConfig')(modules || false);
+	const babelConfig = require('./utils/getBabelCommonConfig')(modules || false);
 
 	// babel import for components
 	babelConfig.plugins.push([
@@ -43,13 +43,13 @@ function getWebpackConfig(modules) {
 	]);
 
 	// Other package
-	if (pkg.name !== '@embibe/educo') {
+	if (pkg.name !== 'webxt') {
 		babelConfig.plugins.push([
 			resolve('babel-plugin-import'),
 			{
 				style: 'css',
 				libraryDirectory: 'es',
-				libraryName: 'educo'
+				libraryName: 'webxt'
 			},
 			'other-package-babel-plugin-import'
 		]);
@@ -116,14 +116,14 @@ function getWebpackConfig(modules) {
 							options: {
 								sourceMap: true
 							}
+						},
+						{
+							loader: 'postcss-loader',
+							options: {
+								...postcssConfig,
+								sourceMap: true
+							}
 						}
-						// {
-						// 	loader: 'postcss-loader',
-						// 	options: {
-						// 		...postcssConfig,
-						// 		sourceMap: true
-						// 	}
-						// }
 					]
 				},
 				{
@@ -136,13 +136,13 @@ function getWebpackConfig(modules) {
 								sourceMap: true
 							}
 						},
-						// {
-						// 	loader: 'postcss-loader',
-						// 	options: {
-						// 		...postcssConfig,
-						// 		sourceMap: true
-						// 	}
-						// },
+						{
+							loader: 'postcss-loader',
+							options: {
+								...postcssConfig,
+								sourceMap: true
+							}
+						},
 						{
 							loader: resolve('less-loader'),
 							options: {
@@ -172,11 +172,11 @@ function getWebpackConfig(modules) {
 			new webpack.BannerPlugin(`
                 ${pkg.name} v${pkg.version}
 
-                Copyright 2019-present, Anish M Prasad
+                Copyright 2019-present, webxt
                 All rights reserved.
             `),
 			new WebpackBar({
-				name: 'Educo Component Library',
+				name: 'webxt',
 				color: '#2f54eb'
 			}),
 			new CleanUpStatsPlugin(),

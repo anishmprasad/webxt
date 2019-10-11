@@ -1,14 +1,12 @@
 {
-	"name": "mywebpack",
+	"name": "webxt",
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
+	"scripts": {},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/anishmprasad/myWebpack.git"
+		"url": "git+https://github.com/anishmprasad/webxt.git"
 	},
 	"peerDependencies": {
 		"webpack": "^4.41.0",
@@ -35,7 +33,7 @@
 	"author": "",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/anishmprasad/myWebpack/issues"
+		"url": "https://github.com/anishmprasad/webxt/issues"
 	},
-	"homepage": "https://github.com/anishmprasad/myWebpack#readme"
+	"homepage": "https://github.com/anishmprasad/webxt#readme"
 }
