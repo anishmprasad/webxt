@@ -23,7 +23,7 @@ const getBabelCommonConfig = require('./utils/getBabelCommonConfig');
 const transformLess = require('./utils/transformLess');
 
 // console.log(require('./transformLess'));
-const getNpm = require('./getNpm');
+// const getNpm = require('./getNpm');
 const selfPackage = require('../package.json');
 const getNpmArgs = require('./utils/get-npm-args');
 const { cssInjection } = require('./utils/styleUtil');
