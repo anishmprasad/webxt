@@ -28,11 +28,11 @@ const selfPackage = require('../package.json');
 const getNpmArgs = require('./utils/get-npm-args');
 const { cssInjection } = require('./utils/styleUtil');
 const tsConfig = require('./utils/getTSCommonConfig')();
-const replaceLib = require('./replaceLib');
-const checkDeps = require('./lint/checkDeps');
-const checkDiff = require('./lint/checkDiff');
-const apiCollection = require('./apiCollection');
-const sortApiTable = require('./sortApiTable');
+// const replaceLib = require('./replaceLib');
+// const checkDeps = require('./lint/checkDeps');
+// const checkDiff = require('./lint/checkDiff');
+// const apiCollection = require('./apiCollection');
+// const sortApiTable = require('./sortApiTable');
 
 const packageJson = require(getProjectPath('package.json'));
 
