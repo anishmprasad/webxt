@@ -43,7 +43,7 @@ function getWebpackConfig(modules) {
 	]);
 
 	// Other package
-	if (pkg.name !== 'myWebpack') {
+	if (pkg.name !== 'webxt') {
 		babelConfig.plugins.push([
 			resolve('babel-plugin-import'),
 			{
@@ -176,7 +176,7 @@ function getWebpackConfig(modules) {
                 All rights reserved.
             `),
 			new WebpackBar({
-				name: 'myWebpack',
+				name: 'webxt',
 				color: '#2f54eb'
 			}),
 			new CleanUpStatsPlugin(),

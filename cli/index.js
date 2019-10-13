@@ -5,7 +5,7 @@
 require('colorful').colorful();
 
 const program = require('commander');
-const packageInfo = require('../../package.json');
+const packageInfo = require('../package.json');
 
 program
 	.version(packageInfo.version)
