@@ -17,8 +17,8 @@ const fs = require('fs');
 const rimraf = require('rimraf');
 const stripCode = require('gulp-strip-code');
 const sourcemaps = require('gulp-sourcemaps');
-const install = require('./install');
-const runCmd = require('./runCmd');
+// const install = require('./install');
+// const runCmd = require('./runCmd');
 const getBabelCommonConfig = require('./utils/getBabelCommonConfig');
 const transformLess = require('./utils/transformLess');
 
