@@ -22,7 +22,7 @@
 	},
 	"scripts": {
 		"pub": "git push origin && npm publish --access public",
-		"postinstall": "node lib/init.js",
+		"postinstall": "node init.js",
 		"lint": "eslint lib",
 		"prettier": "node ./script/prettier.js",
 		"test": "jest && npm run lint"
