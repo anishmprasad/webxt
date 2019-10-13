@@ -37,7 +37,7 @@ function injectRequire() {
 }
 
 function getConfig() {
-	const configPath = getProjectPath('.myWebpack.config.js');
+	const configPath = getProjectPath('.webxt.config.js');
 	if (fs.existsSync(configPath)) {
 		return require(configPath);
 	}

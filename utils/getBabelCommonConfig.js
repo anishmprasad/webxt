@@ -1,4 +1,4 @@
-const { resolve } = require('./webpack.util');
+const { resolve } = require('./projectHelper');
 
 module.exports = function(modules) {
 	const plugins = [
