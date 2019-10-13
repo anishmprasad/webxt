@@ -1,6 +1,6 @@
 const { getProjectPath, injectRequire, getConfig } = require('./utils/projectHelper'); // eslint-disable-line import/order
 
-// injectRequire();
+injectRequire();
 
 const merge2 = require('merge2');
 const { execSync } = require('child_process');
@@ -17,22 +17,22 @@ const fs = require('fs');
 const rimraf = require('rimraf');
 const stripCode = require('gulp-strip-code');
 const sourcemaps = require('gulp-sourcemaps');
-// const install = require('./install');
-// const runCmd = require('./runCmd');
+const install = require('./install');
+const runCmd = require('./runCmd');
 const getBabelCommonConfig = require('./utils/getBabelCommonConfig');
 const transformLess = require('./utils/transformLess');
 
 // console.log(require('./transformLess'));
-// const getNpm = require('./getNpm');
-// const selfPackage = require('../package.json');
-// const getNpmArgs = require('./utils/get-npm-args');
-// const { cssInjection } = require('./utils/styleUtil');
+const getNpm = require('./getNpm');
+const selfPackage = require('../package.json');
+const getNpmArgs = require('./utils/get-npm-args');
+const { cssInjection } = require('./utils/styleUtil');
 const tsConfig = require('./utils/getTSCommonConfig')();
-// const replaceLib = require('./replaceLib');
-// const checkDeps = require('./lint/checkDeps');
-// const checkDiff = require('./lint/checkDiff');
-// const apiCollection = require('./apiCollection');
-// const sortApiTable = require('./sortApiTable');
+const replaceLib = require('./replaceLib');
+const checkDeps = require('./lint/checkDeps');
+const checkDiff = require('./lint/checkDiff');
+const apiCollection = require('./apiCollection');
+const sortApiTable = require('./sortApiTable');
 
 const packageJson = require(getProjectPath('package.json'));
 
@@ -170,54 +170,54 @@ gulp.task(
 	})
 );
 
-// gulp.task('ts-lint', gulp.series(lintWrapper()));
+gulp.task('ts-lint', gulp.series(lintWrapper()));
 
-// gulp.task('ts-lint-fix', gulp.series(lintWrapper(['--fix'])));
+gulp.task('ts-lint-fix', gulp.series(lintWrapper(['--fix'])));
 
 const tsFiles = ['**/*.ts', '**/*.tsx', '!node_modules/**/*.*', 'typings/**/*.d.ts'];
 
-// function compileTs(stream) {
-// 	return stream
-// 		.pipe(ts(tsConfig))
-// 		.js.pipe(
-// 			through2.obj(function(file, encoding, next) {
-// 				// console.log(file.path, file.base);
-// 				file.path = file.path.replace(/\.[jt]sx$/, '.js');
-// 				this.push(file);
-// 				next();
-// 			})
-// 		)
-// 		.pipe(gulp.dest(process.cwd()));
-// }
+function compileTs(stream) {
+	return stream
+		.pipe(ts(tsConfig))
+		.js.pipe(
+			through2.obj(function(file, encoding, next) {
+				// console.log(file.path, file.base);
+				file.path = file.path.replace(/\.[jt]sx$/, '.js');
+				this.push(file);
+				next();
+			})
+		)
+		.pipe(gulp.dest(process.cwd()));
+}
 
-// gulp.task('tsc', () =>
-// 	compileTs(
-// 		gulp.src(tsFiles, {
-// 			base: cwd
-// 		})
-// 	)
-// );
+gulp.task('tsc', () =>
+	compileTs(
+		gulp.src(tsFiles, {
+			base: cwd
+		})
+	)
+);
 
-// gulp.task(
-// 	'watch-tsc',
-// 	gulp.series('tsc', () => {
-// 		watch(tsFiles, f => {
-// 			if (f.event === 'unlink') {
-// 				const fileToDelete = f.path.replace(/\.tsx?$/, '.js');
-// 				if (fs.existsSync(fileToDelete)) {
-// 					fs.unlinkSync(fileToDelete);
-// 				}
-// 				return;
-// 			}
-// 			const myPath = path.relative(cwd, f.path);
-// 			compileTs(
-// 				gulp.src([myPath, 'typings/**/*.d.ts'], {
-// 					base: cwd
-// 				})
-// 			);
-// 		});
-// 	})
-// );
+gulp.task(
+	'watch-tsc',
+	gulp.series('tsc', () => {
+		watch(tsFiles, f => {
+			if (f.event === 'unlink') {
+				const fileToDelete = f.path.replace(/\.tsx?$/, '.js');
+				if (fs.existsSync(fileToDelete)) {
+					fs.unlinkSync(fileToDelete);
+				}
+				return;
+			}
+			const myPath = path.relative(cwd, f.path);
+			compileTs(
+				gulp.src([myPath, 'typings/**/*.d.ts'], {
+					base: cwd
+				})
+			);
+		});
+	})
+);
 
 function babelify(js, modules) {
 	const babelConfig = getBabelCommonConfig(modules);
@@ -324,50 +324,50 @@ function compile(modules) {
 	return merge2([less, tsFilesStream, tsd, assets]);
 }
 
-// function publish(tagString, done) {
-// 	let args = ['publish', '--with-antd-tools', '--access=public'];
-// 	if (tagString) {
-// 		args = args.concat(['--tag', tagString]);
-// 	}
-// 	const publishNpm = process.env.PUBLISH_NPM_CLI || 'npm';
-// 	runCmd(publishNpm, args, code => {
-// 		console.log('Publish return code:', code);
-// 		if (!argv['skip-tag'] && !code) {
-// 			tag();
-// 		}
-// 		done(code);
-// 	});
-// }
+function publish(tagString, done) {
+	let args = ['publish', '--with-antd-tools', '--access=public'];
+	if (tagString) {
+		args = args.concat(['--tag', tagString]);
+	}
+	const publishNpm = process.env.PUBLISH_NPM_CLI || 'npm';
+	runCmd(publishNpm, args, code => {
+		console.log('Publish return code:', code);
+		if (!argv['skip-tag'] && !code) {
+			tag();
+		}
+		done(code);
+	});
+}
 
 // We use https://unpkg.com/[name]/?meta to check exist files
-// gulp.task(
-// 	'package-diff',
-// 	gulp.series(done => {
-// 		checkDiff(packageJson.name, done);
-// 	})
-// );
+gulp.task(
+	'package-diff',
+	gulp.series(done => {
+		checkDiff(packageJson.name, done);
+	})
+);
 
-// function pub(done) {
-// 	const notOk = !packageJson.version.match(/^\d+\.\d+\.\d+$/);
-// 	let tagString;
-// 	if (argv['npm-tag']) {
-// 		tagString = argv['npm-tag'];
-// 	}
-// 	if (!tagString && notOk) {
-// 		tagString = 'next';
-// 	}
-// 	if (packageJson.scripts['pre-publish']) {
-// 		runCmd('npm', ['run', 'pre-publish'], code2 => {
-// 			if (code2) {
-// 				done(code2);
-// 				return;
-// 			}
-// 			publish(tagString, done);
-// 		});
-// 	} else {
-// 		publish(tagString, done);
-// 	}
-// }
+function pub(done) {
+	const notOk = !packageJson.version.match(/^\d+\.\d+\.\d+$/);
+	let tagString;
+	if (argv['npm-tag']) {
+		tagString = argv['npm-tag'];
+	}
+	if (!tagString && notOk) {
+		tagString = 'next';
+	}
+	if (packageJson.scripts['pre-publish']) {
+		runCmd('npm', ['run', 'pre-publish'], code2 => {
+			if (code2) {
+				done(code2);
+				return;
+			}
+			publish(tagString, done);
+		});
+	} else {
+		publish(tagString, done);
+	}
+}
 
 gulp.task('compile-with-es', done => {
 	console.log('[Parallel] Compile to es...');
@@ -391,68 +391,68 @@ gulp.task('compile-finalize', done => {
 
 gulp.task('compile', gulp.series(gulp.parallel('compile-with-es', 'compile-with-lib'), 'compile-finalize'));
 
-// gulp.task(
-// 	'install',
-// 	gulp.series(done => {
-// 		install(done);
-// 	})
-// );
+gulp.task(
+	'install',
+	gulp.series(done => {
+		install(done);
+	})
+);
 
-// gulp.task(
-// 	'pub',
-// 	gulp.series('check-git', 'compile', 'dist', 'package-diff', done => {
-// 		pub(done);
-// 	})
-// );
+gulp.task(
+	'pub',
+	gulp.series('check-git', 'compile', 'dist', 'package-diff', done => {
+		pub(done);
+	})
+);
 
-// gulp.task(
-// 	'update-self',
-// 	gulp.series(done => {
-// 		getNpm(npm => {
-// 			console.log(`${npm} updating ${selfPackage.name}`);
-// 			runCmd(npm, ['update', selfPackage.name], c => {
-// 				console.log(`${npm} update ${selfPackage.name} end`);
-// 				done(c);
-// 			});
-// 		});
-// 	})
-// );
+gulp.task(
+	'update-self',
+	gulp.series(done => {
+		getNpm(npm => {
+			console.log(`${npm} updating ${selfPackage.name}`);
+			runCmd(npm, ['update', selfPackage.name], c => {
+				console.log(`${npm} update ${selfPackage.name} end`);
+				done(c);
+			});
+		});
+	})
+);
 
-// gulp.task(
-// 	'guard',
-// 	gulp.series(done => {
-// 		function reportError() {
-// 			console.log(chalk.bgRed('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'));
-// 			console.log(chalk.bgRed('!! `npm publish` is forbidden for this package. !!'));
-// 			console.log(chalk.bgRed('!! Use `npm run pub` instead.        !!'));
-// 			console.log(chalk.bgRed('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'));
-// 		}
-// 		const npmArgs = getNpmArgs();
-// 		if (npmArgs) {
-// 			for (let arg = npmArgs.shift(); arg; arg = npmArgs.shift()) {
-// 				if (/^pu(b(l(i(sh?)?)?)?)?$/.test(arg) && npmArgs.indexOf('--with-antd-tools') < 0) {
-// 					reportError();
-// 					done(1);
-// 					return;
-// 				}
-// 			}
-// 		}
-// 		done();
-// 	})
-// );
+gulp.task(
+	'guard',
+	gulp.series(done => {
+		function reportError() {
+			console.log(chalk.bgRed('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'));
+			console.log(chalk.bgRed('!! `npm publish` is forbidden for this package. !!'));
+			console.log(chalk.bgRed('!! Use `npm run pub` instead.        !!'));
+			console.log(chalk.bgRed('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'));
+		}
+		const npmArgs = getNpmArgs();
+		if (npmArgs) {
+			for (let arg = npmArgs.shift(); arg; arg = npmArgs.shift()) {
+				if (/^pu(b(l(i(sh?)?)?)?)?$/.test(arg) && npmArgs.indexOf('--with-antd-tools') < 0) {
+					reportError();
+					done(1);
+					return;
+				}
+			}
+		}
+		done();
+	})
+);
 
-// gulp.task(
-// 	'sort-api-table',
-// 	gulp.series(done => {
-// 		sortApiTable();
-// 		done();
-// 	})
-// );
+gulp.task(
+	'sort-api-table',
+	gulp.series(done => {
+		sortApiTable();
+		done();
+	})
+);
 
-// gulp.task(
-// 	'api-collection',
-// 	gulp.series(done => {
-// 		apiCollection();
-// 		done();
-// 	})
-// );
+gulp.task(
+	'api-collection',
+	gulp.series(done => {
+		apiCollection();
+		done();
+	})
+);
