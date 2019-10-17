@@ -1,6 +1,6 @@
 # webxt 🔧🔧🔧
 
-a webpack config for modern web apps
+Tools for Modern React Application
 
 ## Licence
 MIT
