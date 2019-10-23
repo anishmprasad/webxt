@@ -49,7 +49,7 @@ function getWebpackConfig(modules) {
 			{
 				style: 'css',
 				libraryDirectory: 'es',
-				libraryName: 'myWebpack'
+				libraryName: 'webxt'
 			},
 			'other-package-babel-plugin-import'
 		]);
@@ -172,12 +172,12 @@ function getWebpackConfig(modules) {
 			new webpack.BannerPlugin(`
                 ${pkg.name} v${pkg.version}
 
-                Copyright 2019-present, Anish M Prasad
+                Copyright 2019-present, ${pkg.author || 'Anish M Prasad'}
                 All rights reserved.
             `),
 			new WebpackBar({
-				name: 'webxt',
-				color: '#2f54eb'
+				name: pkg.name || 'webxt',
+				color: pkg.color || '#2f54eb'
 			}),
 			new CleanUpStatsPlugin(),
 			new FilterWarningsPlugin({
