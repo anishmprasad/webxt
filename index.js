@@ -56,7 +56,7 @@ function getWebpackConfig(modules) {
 	}
 
 	if (modules === false) {
-		babelConfig.plugins.push(require.resolve('./replaceLib'));
+		babelConfig.plugins.push(require.resolve('./utils/replaceLib'));
 	}
 
 	const config = {
