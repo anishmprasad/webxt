@@ -264,7 +264,6 @@ function babelify(js, modules) {
 }
 
 function compile(modules) {
-	console.log('compile');
 	rimraf.sync(modules !== false ? libDir : esDir);
 	const less = gulp
 		.src(['components/**/*.less'])
@@ -295,7 +294,6 @@ function compile(modules) {
 	let error = 0;
 	const source = ['core/components/**/*.jsx', 'core/components/**/*.js'];
 	// allow jsx file in components/xxx/
-	console.log(tsConfig);
 	// if (tsConfig.allowJs) {
 	// 	source.unshift('components/**/*.jsx');
 	// }
@@ -303,7 +301,6 @@ function compile(modules) {
 	const tsResult = gulp.src(source).pipe(
 		ts(tsConfig, {
 			error(e) {
-				console.log(e);
 				tsDefaultReporter.error(e);
 				error = 1;
 			},
