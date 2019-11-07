@@ -28,7 +28,7 @@ const imageOptions = {
 	limit: 10000
 };
 
-function getWebpackConfig(modules) {
+function getWebpackConfig(modules, entrypoint) {
 	const pkg = require(getProjectPath('package.json'));
 	const babelConfig = require('./utils/getBabelCommonConfig')(modules || false);
 
@@ -194,7 +194,7 @@ function getWebpackConfig(modules) {
 	};
 
 	if (process.env.NODE_ENV === 'PRODUCTION') {
-		const entry = ['./core/index.js'];
+		const entry = entrypoint || ['./core/index.js'];
 
 		// Common config
 		config.externals = {
