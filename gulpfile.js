@@ -322,7 +322,7 @@ function compile(modules) {
 }
 
 function publish(tagString, done) {
-	let args = ['publish', '--with-antd-tools', '--access=public'];
+	let args = ['publish', '--with-webxt-tools', '--access=public'];
 	if (tagString) {
 		args = args.concat(['--tag', tagString]);
 	}
