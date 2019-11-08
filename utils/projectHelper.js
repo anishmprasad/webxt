@@ -12,7 +12,7 @@ function resolve(moduleName) {
 }
 
 // We need hack the require to ensure use package module first
-// For example, `typescript` is required by `gulp-typescript` but provided by `antd`
+// For example, `typescript` is required by `gulp-typescript` but provided by `webxt`
 let injected = false;
 function injectRequire() {
 	if (injected) return;

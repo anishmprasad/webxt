@@ -234,7 +234,7 @@ function babelify(js, modules) {
 				if (file.path.match(/(\/|\\)style(\/|\\)index\.js/)) {
 					const content = file.contents.toString(encoding);
 					if (content.indexOf("'react-native'") !== -1) {
-						// actually in antd-mobile@2.0, this case will never run,
+						// actually in webxt, this case will never run,
 						// since we both split style/index.mative.js style/index.js
 						// but let us keep this check at here
 						// in case some of our developer made a file name mistake ==
@@ -427,7 +427,7 @@ gulp.task(
 		const npmArgs = getNpmArgs();
 		if (npmArgs) {
 			for (let arg = npmArgs.shift(); arg; arg = npmArgs.shift()) {
-				if (/^pu(b(l(i(sh?)?)?)?)?$/.test(arg) && npmArgs.indexOf('--with-antd-tools') < 0) {
+				if (/^pu(b(l(i(sh?)?)?)?)?$/.test(arg) && npmArgs.indexOf('--with-webxt-tools') < 0) {
 					reportError();
 					done(1);
 					return;
