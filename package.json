@@ -1,6 +1,6 @@
 {
 	"name": "webxt",
-	"version": "1.1.2",
+	"version": "1.1.3",
 	"description": "tools for modern web bundling",
 	"keywords": [
 		"react",
@@ -29,6 +29,7 @@
 	},
 	"dependencies": {
 		"@babel/core": "^7.4.5",
+		"@babel/plugin-transform-typescript": "^7.7.2",
 		"@babel/plugin-proposal-class-properties": "^7.4.4",
 		"@babel/plugin-proposal-decorators": "^7.4.4",
 		"@babel/plugin-proposal-export-default-from": "^7.2.0",
