@@ -10,7 +10,8 @@ const path = require('path');
 const webpack = require('webpack');
 const WebpackBar = require('webpackbar');
 const webpackMerge = require('webpack-merge');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
@@ -21,11 +22,11 @@ const CleanUpStatsPlugin = require('./utils/cleanupstatsplugin');
 const svgRegex = /\.svg(\?v=\d+\.\d+\.\d+)?$/;
 const svgOptions = {
 	limit: 10000,
-	minetype: 'image/svg+xml'
+	minetype: 'image/svg+xml',
 };
 
 const imageOptions = {
-	limit: 10000
+	limit: 10000,
 };
 
 function getWebpackConfig(modules, entrypoint) {
@@ -38,8 +39,8 @@ function getWebpackConfig(modules, entrypoint) {
 		{
 			style: true,
 			libraryName: pkg.name,
-			libraryDirectory: 'core'
-		}
+			libraryDirectory: 'core',
+		},
 	]);
 
 	// Other package
@@ -49,9 +50,9 @@ function getWebpackConfig(modules, entrypoint) {
 			{
 				style: 'css',
 				libraryDirectory: 'es',
-				libraryName: 'webxt'
+				libraryName: 'webxt',
 			},
-			'other-package-babel-plugin-import'
+			'other-package-babel-plugin-import',
 		]);
 	}
 
@@ -64,21 +65,21 @@ function getWebpackConfig(modules, entrypoint) {
 
 		output: {
 			path: getProjectPath('./dist/'),
-			filename: '[name].js'
+			filename: '[name].js',
 		},
 
 		resolve: {
 			modules: ['node_modules', path.join(__dirname, '../node_modules')],
 			extensions: ['.web.tsx', '.web.ts', '.web.jsx', '.web.js', '.ts', '.tsx', '.js', '.jsx', '.json'],
 			alias: {
-				[pkg.name]: process.cwd()
-			}
+				[pkg.name]: process.cwd(),
+			},
 		},
 
 		node: ['child_process', 'cluster', 'dgram', 'dns', 'fs', 'module', 'net', 'readline', 'repl', 'tls'].reduce(
 			(acc, name) => ({
 				...acc,
-				[name]: 'empty'
+				[name]: 'empty',
 			}),
 			{}
 		),
@@ -90,22 +91,22 @@ function getWebpackConfig(modules, entrypoint) {
 					test: /\.jsx?$/,
 					exclude: /node_modules/,
 					loader: resolve('babel-loader'),
-					options: babelConfig
+					options: babelConfig,
 				},
 				{
 					test: /\.tsx?$/,
 					use: [
 						{
 							loader: resolve('babel-loader'),
-							options: babelConfig
+							options: babelConfig,
 						},
 						{
 							loader: resolve('ts-loader'),
 							options: {
-								transpileOnly: true
-							}
-						}
-					]
+								transpileOnly: true,
+							},
+						},
+					],
 				},
 				{
 					test: /\.css$/,
@@ -114,17 +115,17 @@ function getWebpackConfig(modules, entrypoint) {
 						{
 							loader: 'css-loader',
 							options: {
-								sourceMap: true
-							}
+								sourceMap: true,
+							},
 						},
 						{
 							loader: 'postcss-loader',
 							options: {
 								...postcssConfig,
-								sourceMap: true
-							}
-						}
-					]
+								sourceMap: true,
+							},
+						},
+					],
 				},
 				{
 					test: /\.less$/,
@@ -133,38 +134,38 @@ function getWebpackConfig(modules, entrypoint) {
 						{
 							loader: 'css-loader',
 							options: {
-								sourceMap: true
-							}
+								sourceMap: true,
+							},
 						},
 						{
 							loader: 'postcss-loader',
 							options: {
 								...postcssConfig,
-								sourceMap: true
-							}
+								sourceMap: true,
+							},
 						},
 						{
 							loader: resolve('less-loader'),
 							options: {
 								javascriptEnabled: true,
-								sourceMap: true
-							}
-						}
-					]
+								sourceMap: true,
+							},
+						},
+					],
 				},
 
 				// Images
 				{
 					test: svgRegex,
 					loader: 'url-loader',
-					options: svgOptions
+					options: svgOptions,
 				},
 				{
 					test: /\.(png|jpg|jpeg|gif)(\?v=\d+\.\d+\.\d+)?$/i,
 					loader: 'url-loader',
-					options: imageOptions
-				}
-			]
+					options: imageOptions,
+				},
+			],
 		},
 
 		plugins: [
@@ -177,20 +178,20 @@ function getWebpackConfig(modules, entrypoint) {
             `),
 			new WebpackBar({
 				name: pkg.name || 'webxt',
-				color: pkg.color || '#2f54eb'
+				color: pkg.color || '#2f54eb',
 			}),
 			new CleanUpStatsPlugin(),
 			new FilterWarningsPlugin({
 				// suppress conflicting order warnings from mini-css-extract-plugin.
 				// ref: https://github.com/ant-design/ant-design/issues/14895
 				// see https://github.com/webpack-contrib/mini-css-extract-plugin/issues/250
-				exclude: /mini-css-extract-plugin[^]*Conflicting order between:/
-			})
+				exclude: /mini-css-extract-plugin[^]*Conflicting order between:/,
+			}),
 		],
 
 		performance: {
-			hints: false
-		}
+			hints: false,
+		},
 	};
 
 	if (process.env.NODE_ENV === 'PRODUCTION') {
@@ -202,67 +203,69 @@ function getWebpackConfig(modules, entrypoint) {
 				root: 'React',
 				commonjs2: 'react',
 				commonjs: 'react',
-				amd: 'react'
+				amd: 'react',
 			},
 			'react-dom': {
 				root: 'ReactDOM',
 				commonjs2: 'react-dom',
 				commonjs: 'react-dom',
-				amd: 'react-dom'
+				amd: 'react-dom',
 			},
 			'styled-components': {
 				root: 'styled',
 				commonjs2: 'styled-components',
 				commonjs: 'styled-components',
-				amd: 'styled-components'
-			}
+				amd: 'styled-components',
+			},
 		};
 		config.output.library = pkg.name;
 		config.output.libraryTarget = 'umd';
 		config.optimization = {
-			minimizer: [
-				new UglifyJsPlugin({
-					cache: true,
-					parallel: true,
-					sourceMap: true,
-					uglifyOptions: {
-						warnings: false
-					}
-				})
-			]
+			minimize: true,
+			minimizer: [new TerserPlugin()],
+			// minimizer: [
+			// 	new UglifyJsPlugin({
+			// 		cache: true,
+			// 		parallel: true,
+			// 		sourceMap: true,
+			// 		uglifyOptions: {
+			// 			warnings: false
+			// 		}
+			// 	})
+			// ]
 		};
 
 		// Development
 		const uncompressedConfig = webpackMerge({}, config, {
 			entry: {
-				[pkg.name]: entry
+				[pkg.name]: entry,
 			},
 			mode: 'development',
 			plugins: [
 				new MiniCssExtractPlugin({
-					filename: '[name].css'
-				})
-			]
+					filename: '[name].css',
+				}),
+			],
 		});
 
 		// Production
 		const prodConfig = webpackMerge({}, config, {
 			entry: {
-				[`${pkg.name}.min`]: entry
+				[`${pkg.name}.min`]: entry,
 			},
 			mode: 'production',
 			plugins: [
 				new webpack.optimize.ModuleConcatenationPlugin(),
 				new webpack.LoaderOptionsPlugin({
-					minimize: true
+					minimize: true,
 				}),
 				new MiniCssExtractPlugin({
-					filename: '[name].css'
-				})
+					filename: '[name].css',
+				}),
 			],
 			optimization: {
-				minimizer: [new OptimizeCSSAssetsPlugin({})]
-			}
+				minimizer: [new OptimizeCSSAssetsPlugin({})],
+			},
 		});
 
 		return [prodConfig, uncompressedConfig];
