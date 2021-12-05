@@ -292,11 +292,12 @@ function compile(modules) {
 		.pipe(gulp.dest(modules === false ? esDir : libDir));
 	const assets = gulp.src(['components/**/*.@(png|svg)']).pipe(gulp.dest(modules === false ? esDir : libDir));
 	let error = 0;
-	const source = ['core/components/**/*.jsx', 'core/components/**/*.js'];
+	const source = ['core/components/**/*.tsx', 'core/components/**/*.ts'];
 	// allow jsx file in components/xxx/
-	// if (tsConfig.allowJs) {
-	// 	source.unshift('components/**/*.jsx');
-	// }
+	if (tsConfig.allowJs) {
+		source.unshift('core/components/**/*.jsx');
+		source.unshift('core/components/**/*.js');
+	}
 	// const tsResult = gulp.src(source);
 	const tsResult = gulp.src(source).pipe(
 		ts(tsConfig, {
