@@ -290,13 +290,18 @@ function compile(modules) {
 	}
 
 	// ================================ TS ================================
-	const source = ['core/components/**/*.tsx', 'core/components/**/*.ts', 'typings/**/*.d.ts', '!components/**/__tests__/**'];
+	const source = [
+		'core/components/**/*.tsx',
+		'core/components/**/*.ts',
+		'typings/**/*.d.ts',
+		'!components/**/__tests__/**',
+	];
 	// allow jsx file in components/xxx/
 	if (tsConfig.allowJs) {
 		source.unshift('core/components/**/*.jsx');
 		source.unshift('core/components/**/*.js');
 	}
-	console.log('source', source)
+	console.log('source', source);
 	// Strip content if needed
 	let sourceStream = gulp.src(source);
 	if (modules === false) {

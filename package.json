@@ -23,7 +23,7 @@
 	"scripts": {
 		"pub": "git push origin && npm publish --access public",
 		"postinstall": "node init.js",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx utils --color",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx --color",
 		"prettier": "prettier --write '*.{js,jsx,scss,css,json}'",
 		"test": "jest && npm run lint"
 	},
