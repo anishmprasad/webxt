@@ -1,6 +1,6 @@
 {
 	"name": "webxt",
-	"version": "1.1.6",
+	"version": "1.1.7-alpha0",
 	"description": "tools for modern web bundling",
 	"keywords": [
 		"react",
@@ -23,7 +23,7 @@
 	"scripts": {
 		"pub": "git push origin && npm publish --access public",
 		"postinstall": "node init.js",
-		"lint": "eslint lib",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx utils --color",
 		"prettier": "prettier --write '*.{js,jsx,scss,css,json}'",
 		"test": "jest && npm run lint"
 	},

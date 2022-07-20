@@ -97,7 +97,7 @@ const lintWrapper = (cmd) => (done) => {
 	const lastCmd = cmd || [];
 	const tslintBin = require.resolve('tslint/bin/tslint');
 	const tslintConfig = path.join(__dirname, './tslint.json');
-	const args = [tslintBin, '-c', tslintConfig, 'components/**/*.tsx'].concat(lastCmd);
+	const args = [tslintBin, '-c', tslintConfig, 'core/components/**/*.tsx'].concat(lastCmd);
 	runCmd('node', args, done);
 };
 
@@ -233,7 +233,7 @@ function compile(modules) {
 
 	// =============================== LESS ===============================
 	const less = gulp
-		.src(['components/**/*.less'])
+		.src(['core/components/**/*.less'])
 		.pipe(
 			through2.obj(function(file, encoding, next) {
 				// Replace content
@@ -277,7 +277,7 @@ function compile(modules) {
 
 	if (transformFile) {
 		transformFileStream = gulp
-			.src(['components/**/*.tsx'])
+			.src(['core/components/**/*.tsx'])
 			.pipe(
 				through2.obj(function(file, encoding, next) {
 					let nextFile = transformFile(file) || file;
@@ -290,13 +290,13 @@ function compile(modules) {
 	}
 
 	// ================================ TS ================================
-	const source = ['components/**/*.tsx', 'components/**/*.ts', 'typings/**/*.d.ts', '!components/**/__tests__/**'];
+	const source = ['core/components/**/*.tsx', 'core/components/**/*.ts', 'typings/**/*.d.ts', '!components/**/__tests__/**'];
 	// allow jsx file in components/xxx/
 	if (tsConfig.allowJs) {
-		source.unshift('components/**/*.jsx');
-		source.unshift('components/**/*.js');
+		source.unshift('core/components/**/*.jsx');
+		source.unshift('core/components/**/*.js');
 	}
-
+	console.log('source', source)
 	// Strip content if needed
 	let sourceStream = gulp.src(source);
 	if (modules === false) {
