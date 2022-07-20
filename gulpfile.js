@@ -16,20 +16,23 @@ const gulp = require('gulp');
 const fs = require('fs');
 const rimraf = require('rimraf');
 const stripCode = require('gulp-strip-code');
-const install = require('./install');
-const runCmd = require('./runCmd');
-const getBabelCommonConfig = require('./getBabelCommonConfig');
-const transformLess = require('./transformLess');
-const getNpm = require('./getNpm');
+const sourcemaps = require('gulp-sourcemaps');
+// const install = require('./install');
+// const runCmd = require('./runCmd');
+const getBabelCommonConfig = require('./utils/getBabelCommonConfig');
+const transformLess = require('./utils/transformLess');
+
+// console.log(require('./transformLess'));
+// const getNpm = require('./getNpm');
 const selfPackage = require('../package.json');
 const getNpmArgs = require('./utils/get-npm-args');
 const { cssInjection } = require('./utils/styleUtil');
-const tsConfig = require('./getTSCommonConfig')();
-const replaceLib = require('./replaceLib');
-const checkDeps = require('./lint/checkDeps');
-const checkDiff = require('./lint/checkDiff');
-const apiCollection = require('./apiCollection');
-const sortApiTable = require('./sortApiTable');
+const tsConfig = require('./utils/getTSCommonConfig')();
+// const replaceLib = require('./utils/replaceLib');
+// const checkDeps = require('./lint/checkDeps');
+// const checkDiff = require('./lint/checkDiff');
+// const apiCollection = require('./apiCollection');
+// const sortApiTable = require('./sortApiTable');
 
 const packageJson = require(getProjectPath('package.json'));
 
@@ -37,6 +40,33 @@ const tsDefaultReporter = ts.reporter.defaultReporter();
 const cwd = process.cwd();
 const libDir = getProjectPath('lib');
 const esDir = getProjectPath('es');
+
+// ('use strict');
+
+const { dirname } = require('path');
+// const fs = require('fs');
+// const { getProjectPath } = require('./utils/projectHelper');
+
+function replacePath(path) {
+	if (path.node.source && /\/lib\//.test(path.node.source.value)) {
+		const esModule = path.node.source.value.replace('/lib/', '/es/');
+		const esPath = dirname(getProjectPath('node_modules', esModule));
+		if (fs.existsSync(esPath)) {
+			path.node.source.value = esModule;
+		}
+	}
+}
+
+function replaceLib() {
+	return {
+		visitor: {
+			ImportDeclaration: replacePath,
+			ExportNamedDeclaration: replacePath
+		}
+	};
+}
+
+// module.exports = replaceLib;
 
 function dist(done) {
 	rimraf.sync(getProjectPath('dist'));
@@ -52,16 +82,9 @@ function dist(done) {
 		}
 
 		const info = stats.toJson();
-		const { dist: { finalize } = {}, bail } = getConfig();
 
 		if (stats.hasErrors()) {
-			(info.errors || []).forEach((error) => {
-				console.error(error);
-			});
-			// https://github.com/ant-design/ant-design/pull/31662
-			if (bail) {
-				process.exit(1);
-			}
+			console.error(info.errors);
 		}
 
 		if (stats.hasWarnings()) {
@@ -75,11 +98,12 @@ function dist(done) {
 			modules: false,
 			chunkModules: false,
 			hash: false,
-			version: false,
+			version: false
 		});
 		console.log(buildInfo);
 
 		// Additional process of dist finalize
+		const { dist: { finalize } = {} } = getConfig();
 		if (finalize) {
 			console.log('[Dist] Finalization...');
 			finalize();
@@ -89,7 +113,7 @@ function dist(done) {
 	});
 }
 
-const lintWrapper = (cmd) => (done) => {
+const lintWrapper = cmd => done => {
 	if (cmd && !Array.isArray(cmd)) {
 		console.error('tslint parameter error!');
 		process.exit(1);
@@ -97,7 +121,7 @@ const lintWrapper = (cmd) => (done) => {
 	const lastCmd = cmd || [];
 	const tslintBin = require.resolve('tslint/bin/tslint');
 	const tslintConfig = path.join(__dirname, './tslint.json');
-	const args = [tslintBin, '-c', tslintConfig, 'core/components/**/*.tsx'].concat(lastCmd);
+	const args = [tslintBin, '-c', tslintConfig, 'components/**/*.tsx'].concat(lastCmd);
 	runCmd('node', args, done);
 };
 
@@ -112,7 +136,7 @@ function tag() {
 
 gulp.task(
 	'check-git',
-	gulp.series((done) => {
+	gulp.series(done => {
 		runCmd('git', ['status', '--porcelain'], (code, result) => {
 			if (/^\?\?/m.test(result)) {
 				return done(`There are untracked files in the working tree.\n${result}
@@ -134,14 +158,14 @@ gulp.task('clean', () => {
 
 gulp.task(
 	'dist',
-	gulp.series((done) => {
+	gulp.series(done => {
 		dist(done);
 	})
 );
 
 gulp.task(
 	'deps-lint',
-	gulp.series((done) => {
+	gulp.series(done => {
 		checkDeps(done);
 	})
 );
@@ -169,7 +193,7 @@ function compileTs(stream) {
 gulp.task('tsc', () =>
 	compileTs(
 		gulp.src(tsFiles, {
-			base: cwd,
+			base: cwd
 		})
 	)
 );
@@ -177,7 +201,7 @@ gulp.task('tsc', () =>
 gulp.task(
 	'watch-tsc',
 	gulp.series('tsc', () => {
-		watch(tsFiles, (f) => {
+		watch(tsFiles, f => {
 			if (f.event === 'unlink') {
 				const fileToDelete = f.path.replace(/\.tsx?$/, '.js');
 				if (fs.existsSync(fileToDelete)) {
@@ -188,7 +212,7 @@ gulp.task(
 			const myPath = path.relative(cwd, f.path);
 			compileTs(
 				gulp.src([myPath, 'typings/**/*.d.ts'], {
-					base: cwd,
+					base: cwd
 				})
 			);
 		});
@@ -201,66 +225,63 @@ function babelify(js, modules) {
 	if (modules === false) {
 		babelConfig.plugins.push(replaceLib);
 	}
-	const stream = js.pipe(babel(babelConfig)).pipe(
-		through2.obj(function z(file, encoding, next) {
-			this.push(file.clone());
-			if (file.path.match(/(\/|\\)style(\/|\\)index\.js/)) {
-				const content = file.contents.toString(encoding);
-				if (content.indexOf("'react-native'") !== -1) {
-					// actually in antd-mobile@2.0, this case will never run,
-					// since we both split style/index.mative.js style/index.js
-					// but let us keep this check at here
-					// in case some of our developer made a file name mistake ==
-					next();
-					return;
-				}
+	let stream = js
+		.pipe(sourcemaps.init())
+		.pipe(babel(babelConfig))
+		.pipe(
+			through2.obj(function z(file, encoding, next) {
+				this.push(file.clone());
+				if (file.path.match(/(\/|\\)style(\/|\\)index\.js/)) {
+					const content = file.contents.toString(encoding);
+					if (content.indexOf("'react-native'") !== -1) {
+						// actually in webxt, this case will never run,
+						// since we both split style/index.mative.js style/index.js
+						// but let us keep this check at here
+						// in case some of our developer made a file name mistake ==
+						next();
+						return;
+					}
 
-				file.contents = Buffer.from(cssInjection(content));
-				file.path = file.path.replace(/index\.js/, 'css.js');
-				this.push(file);
-				next();
-			} else {
-				next();
-			}
-		})
-	);
+					file.contents = Buffer.from(cssInjection(content));
+					file.path = file.path.replace(/index\.js/, 'css.js');
+					this.push(file);
+					next();
+				} else {
+					next();
+				}
+			})
+		)
+		.pipe(sourcemaps.write('.'));
+	if (modules === false) {
+		stream = stream.pipe(
+			stripCode({
+				start_comment: '@remove-on-es-build-begin',
+				end_comment: '@remove-on-es-build-end'
+			})
+		);
+	}
 	return stream.pipe(gulp.dest(modules === false ? esDir : libDir));
 }
 
 function compile(modules) {
-	const { compile: { transformTSFile, transformFile, includeLessFile = [] } = {} } = getConfig();
 	rimraf.sync(modules !== false ? libDir : esDir);
-
-	// =============================== LESS ===============================
 	const less = gulp
-		.src(['core/components/**/*.less'])
+		.src(['components/**/*.less'])
 		.pipe(
 			through2.obj(function(file, encoding, next) {
-				// Replace content
-				const cloneFile = file.clone();
-				const content = file.contents.toString().replace(/^\uFEFF/, '');
-
-				cloneFile.contents = Buffer.from(content);
-
-				// Clone for css here since `this.push` will modify file.path
-				const cloneCssFile = cloneFile.clone();
-
-				this.push(cloneFile);
-
-				// Transform less file
+				this.push(file.clone());
 				if (
 					file.path.match(/(\/|\\)style(\/|\\)index\.less$/) ||
-					file.path.match(/(\/|\\)style(\/|\\)v2-compatible-reset\.less$/) ||
-					includeLessFile.some((regex) => file.path.match(regex))
+					file.path.match(/(\/|\\)style(\/|\\)v2-compatible-reset\.less$/)
 				) {
-					transformLess(cloneCssFile.contents.toString(), cloneCssFile.path)
-						.then((css) => {
-							cloneCssFile.contents = Buffer.from(css);
-							cloneCssFile.path = cloneCssFile.path.replace(/\.less$/, '.css');
-							this.push(cloneCssFile);
+					transformLess(file.path)
+						.then(css => {
+							file.contents = Buffer.from(css);
+							file.path = file.path.replace(/\.less$/, '.css');
+							this.push(file);
 							next();
 						})
-						.catch((e) => {
+						.catch(e => {
 							console.error(e);
 						});
 				} else {
@@ -271,66 +292,20 @@ function compile(modules) {
 		.pipe(gulp.dest(modules === false ? esDir : libDir));
 	const assets = gulp.src(['components/**/*.@(png|svg)']).pipe(gulp.dest(modules === false ? esDir : libDir));
 	let error = 0;
-
-	// =============================== FILE ===============================
-	let transformFileStream;
-
-	if (transformFile) {
-		transformFileStream = gulp
-			.src(['core/components/**/*.tsx'])
-			.pipe(
-				through2.obj(function(file, encoding, next) {
-					let nextFile = transformFile(file) || file;
-					nextFile = Array.isArray(nextFile) ? nextFile : [nextFile];
-					nextFile.forEach((f) => this.push(f));
-					next();
-				})
-			)
-			.pipe(gulp.dest(modules === false ? esDir : libDir));
-	}
-
-	// ================================ TS ================================
-	const source = [
-		'core/components/**/*.tsx',
-		'core/components/**/*.ts',
-		'typings/**/*.d.ts',
-		'!components/**/__tests__/**',
-	];
+	const source = ['core/components/**/*.jsx', 'core/components/**/*.js'];
 	// allow jsx file in components/xxx/
 	if (tsConfig.allowJs) {
 		source.unshift('core/components/**/*.jsx');
 		source.unshift('core/components/**/*.js');
 	}
-	console.log('source', source);
-	// Strip content if needed
-	let sourceStream = gulp.src(source);
-	if (modules === false) {
-		sourceStream = sourceStream.pipe(
-			stripCode({
-				start_comment: '@remove-on-es-build-begin',
-				end_comment: '@remove-on-es-build-end',
-			})
-		);
-	}
-
-	if (transformTSFile) {
-		sourceStream = sourceStream.pipe(
-			through2.obj(function(file, encoding, next) {
-				let nextFile = transformTSFile(file) || file;
-				nextFile = Array.isArray(nextFile) ? nextFile : [nextFile];
-				nextFile.forEach((f) => this.push(f));
-				next();
-			})
-		);
-	}
-
-	const tsResult = sourceStream.pipe(
+	// const tsResult = gulp.src(source);
+	const tsResult = gulp.src(source).pipe(
 		ts(tsConfig, {
 			error(e) {
 				tsDefaultReporter.error(e);
 				error = 1;
 			},
-			finish: tsDefaultReporter.finish,
+			finish: tsDefaultReporter.finish
 		})
 	);
 
@@ -344,16 +319,16 @@ function compile(modules) {
 	tsResult.on('end', check);
 	const tsFilesStream = babelify(tsResult.js, modules);
 	const tsd = tsResult.dts.pipe(gulp.dest(modules === false ? esDir : libDir));
-	return merge2([less, tsFilesStream, tsd, assets, transformFileStream].filter((s) => s));
+	return merge2([less, tsFilesStream, tsd, assets]);
 }
 
 function publish(tagString, done) {
-	let args = ['publish', '--with-antd-tools', '--access=public'];
+	let args = ['publish', '--with-webxt-tools', '--access=public'];
 	if (tagString) {
 		args = args.concat(['--tag', tagString]);
 	}
 	const publishNpm = process.env.PUBLISH_NPM_CLI || 'npm';
-	runCmd(publishNpm, args, (code) => {
+	runCmd(publishNpm, args, code => {
 		console.log('Publish return code:', code);
 		if (!argv['skip-tag'] && !code) {
 			tag();
@@ -365,34 +340,22 @@ function publish(tagString, done) {
 // We use https://unpkg.com/[name]/?meta to check exist files
 gulp.task(
 	'package-diff',
-	gulp.series((done) => {
-		checkDiff(packageJson.name, packageJson.version, done);
+	gulp.series(done => {
+		checkDiff(packageJson.name, done);
 	})
 );
 
-function pub(done, customTag) {
+function pub(done) {
 	const notOk = !packageJson.version.match(/^\d+\.\d+\.\d+$/);
-	let tagString = customTag;
-
-	// Argument tag
+	let tagString;
 	if (argv['npm-tag']) {
 		tagString = argv['npm-tag'];
 	}
-
-	// Config tag
-	if (!tagString) {
-		const { tag: configTag } = getConfig();
-		if (configTag) {
-			tagString = configTag;
-		}
-	}
-
-	// Auto next tag
 	if (!tagString && notOk) {
 		tagString = 'next';
 	}
 	if (packageJson.scripts['pre-publish']) {
-		runCmd('npm', ['run', 'pre-publish'], (code2) => {
+		runCmd('npm', ['run', 'pre-publish'], code2 => {
 			if (code2) {
 				done(code2);
 				return;
@@ -404,17 +367,17 @@ function pub(done, customTag) {
 	}
 }
 
-gulp.task('compile-with-es', (done) => {
+gulp.task('compile-with-es', done => {
 	console.log('[Parallel] Compile to es...');
 	compile(false).on('finish', done);
 });
 
-gulp.task('compile-with-lib', (done) => {
+gulp.task('compile-with-lib', done => {
 	console.log('[Parallel] Compile to js...');
 	compile().on('finish', done);
 });
 
-gulp.task('compile-finalize', (done) => {
+gulp.task('compile-finalize', done => {
 	// Additional process of compile finalize
 	const { compile: { finalize } = {} } = getConfig();
 	if (finalize) {
@@ -426,35 +389,26 @@ gulp.task('compile-finalize', (done) => {
 
 gulp.task('compile', gulp.series(gulp.parallel('compile-with-es', 'compile-with-lib'), 'compile-finalize'));
 
-gulp.task('compile-experimental', gulp.series('compile-with-es', 'compile-finalize'));
-
 gulp.task(
 	'install',
-	gulp.series((done) => {
+	gulp.series(done => {
 		install(done);
 	})
 );
 
 gulp.task(
 	'pub',
-	gulp.series('check-git', 'compile', 'dist', 'package-diff', (done) => {
+	gulp.series('check-git', 'compile', 'dist', 'package-diff', done => {
 		pub(done);
 	})
 );
 
 gulp.task(
-	'pub-experimental',
-	gulp.series('check-git', 'compile-experimental', 'dist', 'package-diff', (done) => {
-		pub(done, 'experimental');
-	})
-);
-
-gulp.task(
 	'update-self',
-	gulp.series((done) => {
-		getNpm((npm) => {
+	gulp.series(done => {
+		getNpm(npm => {
 			console.log(`${npm} updating ${selfPackage.name}`);
-			runCmd(npm, ['update', selfPackage.name], (c) => {
+			runCmd(npm, ['update', selfPackage.name], c => {
 				console.log(`${npm} update ${selfPackage.name} end`);
 				done(c);
 			});
@@ -464,24 +418,19 @@ gulp.task(
 
 gulp.task(
 	'guard',
-	gulp.series((done) => {
+	gulp.series(done => {
 		function reportError() {
 			console.log(chalk.bgRed('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'));
 			console.log(chalk.bgRed('!! `npm publish` is forbidden for this package. !!'));
-			console.log(chalk.bgRed('!! Use `npm run pub` instead.                   !!'));
+			console.log(chalk.bgRed('!! Use `npm run pub` instead.        !!'));
 			console.log(chalk.bgRed('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'));
 		}
 		const npmArgs = getNpmArgs();
 		if (npmArgs) {
 			for (let arg = npmArgs.shift(); arg; arg = npmArgs.shift()) {
-				if (
-					/^pu(b(l(i(sh?)?)?)?)?$/.test(arg) &&
-					npmArgs.indexOf('--with-antd-tools') < 0 &&
-					!process.env.npm_config_with_antd_tools
-				) {
+				if (/^pu(b(l(i(sh?)?)?)?)?$/.test(arg) && npmArgs.indexOf('--with-webxt-tools') < 0) {
 					reportError();
 					done(1);
-					process.exit(1);
 					return;
 				}
 			}
@@ -492,7 +441,7 @@ gulp.task(
 
 gulp.task(
 	'sort-api-table',
-	gulp.series((done) => {
+	gulp.series(done => {
 		sortApiTable();
 		done();
 	})
@@ -500,7 +449,7 @@ gulp.task(
 
 gulp.task(
 	'api-collection',
-	gulp.series((done) => {
+	gulp.series(done => {
 		apiCollection();
 		done();
 	})
