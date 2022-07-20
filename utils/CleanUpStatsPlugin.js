@@ -4,7 +4,7 @@ class CleanUpStatsPlugin {
 		this.option = {
 			MiniCSSExtractPlugin: true,
 			tsLoader: true,
-			...option
+			...option,
 		};
 	}
 
@@ -23,13 +23,13 @@ class CleanUpStatsPlugin {
 	}
 
 	apply(compiler) {
-		compiler.hooks.done.tap('CleanUpStatsPlugin', stats => {
+		compiler.hooks.done.tap('CleanUpStatsPlugin', (stats) => {
 			const { children, warnings } = stats.compilation;
 			if (Array.isArray(children)) {
-				stats.compilation.children = children.filter(child => this.shouldPickStatChild(child));
+				stats.compilation.children = children.filter((child) => this.shouldPickStatChild(child));
 			}
 			if (Array.isArray(warnings)) {
-				stats.compilation.warnings = warnings.filter(message => this.shouldPickWarning(message));
+				stats.compilation.warnings = warnings.filter((message) => this.shouldPickWarning(message));
 			}
 		});
 	}

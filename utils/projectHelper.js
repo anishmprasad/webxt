@@ -49,5 +49,5 @@ module.exports = {
 	getProjectPath,
 	resolve,
 	injectRequire,
-	getConfig
+	getConfig,
 };

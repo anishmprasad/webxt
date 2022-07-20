@@ -17,12 +17,12 @@ function transformLess(lessFile, config = {}) {
 		paths: [path.dirname(resolvedLessFile)],
 		filename: resolvedLessFile,
 		plugins: [new NpmImportPlugin({ prefix: '~' })],
-		javascriptEnabled: true
+		javascriptEnabled: true,
 	};
 	return less
 		.render(data, lessOpts)
-		.then(result => postcss(postcssConfig.plugins).process(result.css, { from: undefined }))
-		.then(r => r.css);
+		.then((result) => postcss(postcssConfig.plugins).process(result.css, { from: undefined }))
+		.then((r) => r.css);
 }
 
 module.exports = transformLess;

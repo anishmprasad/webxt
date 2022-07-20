@@ -41,7 +41,7 @@ function addConfigHooks(cfg, projectDir) {
 		site: 'webxt run site',
 		deploy: 'webxt run update-self && webxt run deploy',
 		'just-deploy': 'webxt run just-deploy',
-		pub: 'webxt run update-self && webxt run pub'
+		pub: 'webxt run update-self && webxt run pub',
 	});
 
 	if (cfg.scripts.prepublish) {
@@ -62,7 +62,7 @@ function init() {
 	if (!testMode) {
 		const npmArgs = getNpmArgs();
 
-		if (!npmArgs || !npmArgs.some(arg => /^webxt(@\d+\.\d+.\d+)?$/.test(arg))) {
+		if (!npmArgs || !npmArgs.some((arg) => /^webxt(@\d+\.\d+.\d+)?$/.test(arg))) {
 			return;
 		}
 	}
