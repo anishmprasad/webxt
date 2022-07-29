@@ -292,7 +292,7 @@ function compile(modules) {
 		.pipe(gulp.dest(modules === false ? esDir : libDir));
 	const assets = gulp.src(['components/**/*.@(png|svg)']).pipe(gulp.dest(modules === false ? esDir : libDir));
 	let error = 0;
-	const { source : sourcePath = [] } = getConfig();
+	const { source: sourcePath = [] } = getConfig();
 
 	// const source = ['core/components/**/*.jsx', 'core/components/**/*.js', ...tsConfig.source];
 	const source = [
@@ -304,7 +304,7 @@ function compile(modules) {
 		'components/**/*.ts',
 		'components/***/**/*.ts',
 		'components/***/**/*.tsx',
-		...sourcePath
+		...sourcePath,
 	];
 	// allow jsx file in components/xxx/
 	if (tsConfig.allowJs) {
