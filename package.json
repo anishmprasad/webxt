@@ -1,7 +1,7 @@
 {
 	"name": "webxt",
-	"version": "1.1.7-alpha.5",
-	"description": "tools for modern web bundling",
+	"version": "1.1.7-alpha.6",
+	"description": "Tools for modern web bundling",
 	"keywords": [
 		"react",
 		"tools"
