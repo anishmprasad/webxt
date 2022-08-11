@@ -7,5 +7,5 @@ function cssInjection(content) {
 }
 
 module.exports = {
-	cssInjection
+	cssInjection,
 };

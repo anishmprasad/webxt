@@ -18,7 +18,7 @@ module.exports = function() {
 			jsx: 'preserve',
 			moduleResolution: 'node',
 			declaration: true,
-			allowSyntheticDefaultImports: true
+			allowSyntheticDefaultImports: true,
 		},
 		my.compilerOptions
 	);
